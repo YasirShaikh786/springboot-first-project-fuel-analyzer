@@ -29,3 +29,5 @@ Users can enter mileage and fuel costs for different fuel types, and the API ret
 - Request and Response DTOs
 - Maven Project Structure
 - API Testing with Postman
+
+![Home Screen](image/home.png)

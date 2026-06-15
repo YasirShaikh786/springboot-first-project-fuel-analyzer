@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuel Cost Comparator</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; margin: 30px; }
+        .comparison-container { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
+        .fuel-card { background: white; border-radius: 8px; padding: 20px; width: 250px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 5px solid #007bff; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 14px; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .result-box { margin-top: 15px; padding: 10px; background: #e9ecef; border-radius: 4px; min-height: 60px; font-size: 14px; }
+        .highlight { color: #28a745; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2 style="text-align: center;">Fuel Efficiency & Cost Comparator</h2>
+    
+    <div class="comparison-container">
+        
+        <div class="fuel-card">
+            <h3>Option 1</h3>
+            <div class="form-group">
+                <label>Fuel Type</label>
+                <select id="type1">
+                    <option value="Pure Petrol">Pure Petrol</option>
+                    <option value="E20">E20 Petrol</option>
+                    <option value="E100">E100 Ethanol</option>
+                    <option value="Electric">Electric</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Mileage (km/L or km/kWh)</label>
+                <input type="number" id="mileage1" value="15">
+            </div>
+            <div class="form-group">
+                <label>Cost per Liter / Unit (Rs.)</label>
+                <input type="number" id="cost1" value="105">
+            </div>
+            <button onclick="calculateCard(1)">Calculate</button>
+            <div class="result-box">
+                <strong>Running Cost:</strong> <br>
+                <span id="res-cost1" class="highlight">-</span>
+                <p id="res-sum1" style="margin: 5px 0 0 0; font-size: 12px; color: #666;"></p>
+            </div>
+        </div>
+
+        <div class="fuel-card" style="border-top-color: #28a745;">
+            <h3>Option 2</h3>
+            <div class="form-group">
+                <label>Fuel Type</label>
+                <select id="type2">
+                    <option value="E20" selected>E20 Petrol</option>
+                    <option value="Pure Petrol">Pure Petrol</option>
+                    <option value="E100">E100 Ethanol</option>
+                    <option value="Electric">Electric</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Mileage (km/L or km/kWh)</label>
+                <input type="number" id="mileage2" value="12">
+            </div>
+            <div class="form-group">
+                <label>Cost per Liter / Unit (Rs.)</label>
+                <input type="number" id="cost2" value="85">
+            </div>
+            <button onclick="calculateCard(2)" style="background-color: #28a745;">Calculate</button>
+            <div class="result-box">
+                <strong>Running Cost:</strong> <br>
+                <span id="res-cost2" class="highlight">-</span>
+                <p id="res-sum2" style="margin: 5px 0 0 0; font-size: 12px; color: #666;"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function calculateCard(cardNumber) {
+            const fuelType = document.getElementById(`type${cardNumber}`).value;
+            const mileage = parseFloat(document.getElementById(`mileage${cardNumber}`).value);
+            const costPerLiter = parseFloat(document.getElementById(`cost${cardNumber}`).value);
+
+            const payload = {
+                fuelType: fuelType,
+                mileage: mileage,
+                costPerLiter: costPerLiter
+            };
+
+            try {
+                const response = await fetch('http://localhost:8081/api/fuel/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                document.getElementById(`res-cost${cardNumber}`).innerText = `Rs. ${data.costPerKm.toFixed(2)} / km`;
+                document.getElementById(`res-sum${cardNumber}`).innerText = data.summary;
+            } catch (error) {
+                console.error('Connection error:', error);
+                document.getElementById(`res-cost${cardNumber}`).innerText = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>
