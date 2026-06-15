@@ -30,4 +30,4 @@ Users can enter mileage and fuel costs for different fuel types, and the API ret
 - Maven Project Structure
 - API Testing with Postman
 
-![Home Screen](image/home.png)
+![Home Screen](image/home.jpg)
